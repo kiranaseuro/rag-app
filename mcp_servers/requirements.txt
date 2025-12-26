@@ -1,0 +1,4 @@
+mcp>=1.9.2
+python-dotenv>=1.1.0
+duckduckgo_search>=6.2.4
+uvicorn>=0.30.0
