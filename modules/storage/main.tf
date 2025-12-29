@@ -1,18 +1,22 @@
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
+}
+
 resource "aws_s3_bucket" "documents" {
-  bucket        = "${var.project_name}-${var.environment}-documents"
+  bucket        = "devops-agent-${var.project_name}-${var.environment}-docs-${random_id.bucket_suffix.hex}"
   force_destroy = var.force_destroy
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-documents"
+    Name = "devops-agent-docs"
   })
 }
 
 resource "aws_s3_bucket" "lambda_artifacts" {
-  bucket        = "${var.project_name}-${var.environment}-lambda-artifacts"
+  bucket        = "devops-agent-${var.project_name}-${var.environment}-artifacts-${random_id.bucket_suffix.hex}"
   force_destroy = var.force_destroy
 
   tags = merge(var.tags, {
-    Name = "${var.project_name}-${var.environment}-lambda-artifacts"
+    Name = "devops-agent-artifacts"
   })
 }
 
