@@ -44,7 +44,8 @@ resource "aws_db_instance" "this" {
   vpc_security_group_ids  = [aws_security_group.db.id]
   publicly_accessible     = false
   skip_final_snapshot     = true
-  backup_retention_period = 1
+  backup_retention_period = 7
+  storage_encrypted       = true
 
   tags = merge(var.tags, {
     Name = "${var.project_name}-${var.environment}-db"

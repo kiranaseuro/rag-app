@@ -26,6 +26,18 @@ module "storage" {
   tags           = var.tags
 }
 
+module "secrets" {
+  source = "../../modules/secrets"
+
+  project_name = var.project_name
+  environment  = var.environment
+  initial_secrets = {
+    DB_PASSWORD = var.db_password
+    DB_USERNAME = var.db_username
+  }
+  tags = var.tags
+}
+
 module "compute" {
   source = "../../modules/compute"
 
@@ -36,6 +48,7 @@ module "compute" {
   public_subnet_ids  = module.network.public_subnet_ids
   ecs_task_sg_id     = module.network.ecs_task_sg_id
   alb_sg_id          = module.network.alb_sg_id
+  secret_arns        = [module.secrets.secret_arn]
   tags               = var.tags
 }
 
@@ -53,7 +66,7 @@ module "database" {
   project_name   = var.project_name
   environment    = var.environment
   vpc_id         = module.network.vpc_id
-  subnet_ids     = module.network.private_subnet_ids # Databases in private subnets
+  subnet_ids     = module.network.private_subnet_ids
   allowed_cidrs  = var.allowed_cidrs
   db_username    = var.db_username
   db_password    = var.db_password
@@ -63,9 +76,10 @@ module "database" {
 module "monitoring" {
   source = "../../modules/monitoring"
 
-  project_name          = var.project_name
-  environment           = var.environment
-  # Update monitoring to use ECS service name instead of Lambda
-  lambda_function_names = [module.compute.service_name] 
-  tags                  = var.tags
+  project_name     = var.project_name
+  environment      = var.environment
+  ecs_cluster_name = module.compute.cluster_name
+  ecs_service_name = module.compute.service_name
+  alb_arn_suffix   = module.compute.alb_arn_suffix
+  tags             = var.tags
 }

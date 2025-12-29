@@ -21,3 +21,7 @@ output "db_endpoint" {
 output "ecr_repository_url" {
   value = module.ecr.repository_url
 }
+
+output "alerts_topic_arn" {
+  value = module.monitoring.alerts_topic_arn
+}

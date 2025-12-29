@@ -1,5 +1,5 @@
 output "api_endpoint" {
-  value = module.api.api_endpoint
+  value = "http://${module.compute.alb_dns_name}"
 }
 
 output "documents_bucket_name" {

@@ -20,9 +20,20 @@ resource "aws_iam_role" "ecs_task_execution_role" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "ecs_task_execution_role_policy" {
-  role       = aws_iam_role.ecs_task_execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole" # Common for ECS in VPC too, but better use AmazonECSTaskExecutionRolePolicy
+resource "aws_iam_role_policy" "ecs_task_exec_secrets" {
+  name = "SecretsManagerAccess"
+  role = aws_iam_role.ecs_task_execution_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action   = ["secretsmanager:GetSecretValue"]
+        Effect   = "Allow"
+        Resource = var.secret_arns
+      }
+    ]
+  })
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_task_exec_standard" {
@@ -58,6 +69,16 @@ resource "aws_ecs_task_definition" "app" {
           "awslogs-stream-prefix" = "ecs"
         }
       }
+      environment = [
+        { name = "ENVIRONMENT", value = var.environment }
+      ]
+      # Pull all secrets from Secrets Manager
+      secrets = [
+        for arn in var.secret_arns : {
+          name = "APP_SECRETS"
+          valueFrom = arn
+        }
+      ]
     }
   ])
 
