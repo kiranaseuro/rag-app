@@ -68,8 +68,7 @@ jobs:
 
       - name: Terraform init
         run: |
-          terraform -chdir=environments/${{ steps.context.outputs.env_name }} init \
-            -backend-config=../../projects/${{ steps.context.outputs.project_name }}/backend-${{ steps.context.outputs.env_name }}.hcl
+          terraform -chdir=environments/${{ steps.context.outputs.env_name }} init
 
       - name: Terraform plan
         run: |
