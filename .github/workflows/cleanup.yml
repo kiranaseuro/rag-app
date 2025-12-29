@@ -37,10 +37,9 @@ jobs:
 
       - name: Terraform init
         run: |
-          terraform -chdir=environments/${{ inputs.environment }} init \
-            -backend-config=../../projects/${{ inputs.project }}/backend-${{ inputs.environment }}.hcl
+          terraform -chdir=environments/${{ github.event.inputs.environment }} init
 
       - name: Terraform destroy
         run: |
-          terraform -chdir=environments/${{ inputs.environment }} destroy -auto-approve \
-            -var-file=../../projects/${{ inputs.project }}/${{ inputs.environment }}.tfvars
+          terraform -chdir=environments/${{ github.event.inputs.environment }} destroy -auto-approve \
+            -var-file=../../projects/${{ github.event.inputs.project }}/${{ github.event.inputs.environment }}.tfvars
